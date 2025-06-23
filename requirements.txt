@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pyodbc
+pymongo
+python-dotenv
+sqlalchemy
+sqlmodel
+cryptography
