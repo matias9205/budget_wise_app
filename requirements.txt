@@ -6,3 +6,7 @@ python-dotenv
 sqlalchemy
 sqlmodel
 cryptography
+pydantic_settings
+pymysql
+pydantic[email]
+pydantic
