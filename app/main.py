@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from sqlalchemy import inspect
 from sqlmodel import Session
 
+from app.core.exceptions import ExceptionsHandlers
 from app.users.routers import UserRouter 
 from app.users.models import User
 from app.categories.routers import CategoryRouter 
@@ -26,6 +27,7 @@ app = FastAPI()
 app.include_router(UserRouter().user_router, prefix="/users")
 app.include_router(TransactionRouter().transaction_router, prefix="/transactions")
 app.include_router(CategoryRouter().category_router, prefix="/categories")
+ExceptionsHandlers().add_exception_handlers(app)
 
 @app.get("/")
 async def index():

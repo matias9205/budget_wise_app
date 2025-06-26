@@ -1,15 +1,20 @@
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional
 from sqlalchemy import Column, Date, Float, String
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.users.models import User
+    from app.categories.models import Category
 
 def get_user_model():
     from app.users.models import User
     return User
+
+def get_category_model():
+    from app.categories.models import Category
+    return Category
 
 class TransactionType(str, Enum):
     income = "income"
@@ -26,3 +31,7 @@ class Transaction(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)    
     user: Optional["User"] = Relationship(back_populates="transactions")
+    category: Optional["Category"] = Relationship(back_populates="transactions")
+
+    class Config:
+        orm_mode = True
