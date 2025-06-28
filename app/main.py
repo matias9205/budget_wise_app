@@ -13,6 +13,7 @@ from app.categories.models import Category
 from app.transactions.routers import TransactionRouter
 from app.transactions.models import Transaction
 from app.config.db import Base, engine
+from app.utils.populate_tables import PopulateTable
 
 load_dotenv()
 
@@ -22,6 +23,8 @@ Base.metadata.create_all(bind=engine)
 print(Base.metadata.create_all(bind=engine))
 inspector = inspect(engine)
 print(inspector.get_table_names())
+PopulateTable(engine).populate_categories()
+PopulateTable(engine).populate_roles()
 
 app = FastAPI()
 app.include_router(UserRouter().user_router, prefix="/users")
