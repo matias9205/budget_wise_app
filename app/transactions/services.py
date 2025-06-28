@@ -1,7 +1,9 @@
+import socket
 from typing import List
 from sqlmodel import Session
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.audit_logs.models import AuditLog
 from app.categories.models import Category
 from app.transactions.schemas import TransactionSchema, NewTransactionSchema
 from app.transactions.models import Transaction
@@ -26,6 +28,8 @@ class TransactionService:
     def create_new_transaction(self, payload:NewTransactionSchema):
         print(f"PAYLOAD DATA: {payload}")
         try:
+            hostname = socket.gethostname()
+            local_ip = socket.gethostbyname(hostname)
             user = self.db.query(User).filter(User.email == payload.user).first()
             categories = [category.name for category in self.db.query(Category).all()]
             print(f"LIST OF CATEGORIES: {categories}")
@@ -40,7 +44,7 @@ class TransactionService:
             else:
                 category = self.db.query(Category).filter(Category.name == payload.category).first()
 
-            if user.balance < payload.amount:
+            if user.balance < payload.amount and (payload.type == 'expense' or payload.type == 'Expense'):
                 raise HTTPException(status_code=400, detail="Insufficient funds")
             
             if payload.type == 'expense' or payload.type == 'Expense':
@@ -60,6 +64,18 @@ class TransactionService:
             self.db.add(new_transaction)
             self.db.commit()
             self.db.refresh(new_transaction)
+
+            new_audit_log = AuditLog(
+                user_id = new_transaction.user_id,
+                action = "Create",
+                target_type = "Transactions",
+                details = f"New Transaction: {new_transaction.type} was registered",
+                ip_address = local_ip
+            )
+            self.db.add(new_audit_log)
+            self.db.commit()
+            self.db.refresh(new_audit_log)
+
             return new_transaction
         except HTTPException:
             raise
