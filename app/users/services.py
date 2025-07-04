@@ -4,19 +4,22 @@ import time
 from typing import List
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import HTTPException
 
 from app.audit_logs.models import AuditLog
 from app.categories.models import Category
+from app.config.config import Settings
 from app.config.db import get_db
 from app.transactions.models import Transaction
 from app.users.models import User
 from app.users.schemas import NewUserSchema, UpdateUser, UserSchemaWithTransactions
 from app.roles.models import Role
+from app.utils.security import Security
 
 class UserService:
     def __init__(self, db: Session):
         self.db = db
+        self.secret_key = Settings().SECRET_KEY
 
     def get_all_users(self) -> List[UserSchemaWithTransactions]:
         users = self.db.query(User).join(Transaction, Transaction.user_id == User.id).join(Category, Transaction.category_id == Category.id).all()
@@ -48,11 +51,13 @@ class UserService:
             print("----------------------------------------------USER TO INSERT IN DB----------------------------------------------")
             print("")
             print("")
+            security = Security(self.secret_key)
+            hashed_password = security.hash_password(payload.password)
             new_user = User(
                 name = payload.name,
                 age = payload.age,
                 email = payload.email,
-                password = payload.password,
+                password = hashed_password,
                 country = payload.country,
                 balance = payload.balance,
                 role_id = user_role.id
