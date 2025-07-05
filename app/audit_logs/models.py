@@ -20,6 +20,7 @@ class Actions(str, Enum):
     logout = "Logout"
 
 class TargetType(str, Enum):
+    auth = "Auth"
     users = "Users"
     transactions = "Transactions"
     categories = "Categories"
