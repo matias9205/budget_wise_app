@@ -33,10 +33,10 @@ class Security:
     
     def decode_token(self, token):
         print(f"TOKEN IN DECODE_TOKEN(): {token}")
-        return jwt.decode(token, key=None, options={"verify_signature":False})
+        return jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
     
     def get_current_user(self):
-        return Depends(self._get_user)
+        return self._get_user
     
     def _get_user(self, token: str = Depends()):
         print(f"TOKEN FOR DECODE: {token}") 
