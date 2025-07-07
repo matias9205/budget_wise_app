@@ -17,7 +17,7 @@ class TransactionSchema(BaseModel):
     updated_at: datetime
     
 class NewTransactionSchema(BaseModel):
-    user: str
+    # user: str
     concept: str
     amount: float
     type: TransactionType

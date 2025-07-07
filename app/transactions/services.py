@@ -25,18 +25,18 @@ class TransactionService:
         except:
             raise HTTPException(status_code=404, detail="No se encontró la transaccion con el ID proporcionado")
         
-    def create_new_transaction(self, payload:NewTransactionSchema):
+    def create_new_transaction(self, username: str, payload:NewTransactionSchema):
         print(f"PAYLOAD DATA: {payload}")
         try:
             hostname = socket.gethostname()
             local_ip = socket.gethostbyname(hostname)
-            user = self.db.query(User).filter(User.email == payload.user).first()
+            user = self.db.query(User).filter(User.name == username).first()
             categories = [category.name for category in self.db.query(Category).all()]
             print(f"LIST OF CATEGORIES: {categories}")
 
             if not user:
-                print(f"USER WITH EMAIL {payload.user} WAS NOT FOUND")
-                raise HTTPException(status_code=404, detail=f"User with email {payload.user} wasn't found")
+                print(f"USER {username} WAS NOT FOUND")
+                raise HTTPException(status_code=404, detail=f"User {username} wasn't found")
             print({'user_id': user.id, 'user_email': user.email})
 
             if payload.category not in categories:

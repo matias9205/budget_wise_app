@@ -33,7 +33,7 @@ class UserService:
         except:
             raise HTTPException(status_code=404, detail="No se encontró el usuario con el ID proporcionado")
         
-    def create_new_user(self, payload: NewUserSchema):
+    def create_new_user(self, payload: NewUserSchema) -> UserSchemaWithTransactions:
         print(f"PAYLOAD DATA: {payload}")
         try:
             hostname = socket.gethostname()

@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 class NewAccessTokenSchema(BaseModel):
     sub: str
@@ -18,3 +18,8 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class UserTokenPayload(BaseModel):
+    sub: int
+    username: str
+    role: str
