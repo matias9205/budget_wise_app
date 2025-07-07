@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from sqlmodel import Session
 
 from app.audit_logs.models import AuditLog
-from app.auth.schemas import Token, UserLogin
+from app.auth.schemas import NewAccessTokenSchema, Token, UserLogin
 from app.config.config import Settings
 from app.roles.models import Role
 from app.users.models import User
@@ -29,11 +29,11 @@ class AuthService:
             raise HTTPException(status_code=401, detail="Invalid credentials")
         print(user)
         user_role = self.db.query(Role).filter(Role.id == user.role_id).first()
-        access_token_payload = {
-            "sub": user.id,
-            "username": user.name,
-            "role": user_role.name
-        }
+        access_token_payload = NewAccessTokenSchema(
+            sub=str(user.id),
+            username=user.name,
+            role=user.role.name
+        )
         new_audit_event = {
             "user_id": user.id,
             "action": "Login",
