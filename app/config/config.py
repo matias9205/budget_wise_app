@@ -1,18 +1,18 @@
 import os
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
 
-load_dotenv()
+if os.getenv("USE_ENV_FILE", "true").lower() == "true":
+    load_dotenv()
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
-    SECRET_KEY: str = os.getenv("SECRET_KEY")
+    DATABASE_URL: str = Field(default="")
+    TEST_DATABASE_URL: str = Field(default="")
+    SQLITE_TEST_URL: str = Field(default="")
+    SECRET_KEY: str = Field(default="supersecretkey")
     debug: bool = False
 
-    @property
-    def database_url(self) -> str:
-        return f"mysql+pymysql://{self.mysql_user}:{self.mysql_password}@{self.mysql_host}:3306/{self.mysql_db}"
-    
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8"
