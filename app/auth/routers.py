@@ -3,7 +3,7 @@ from sqlmodel import Session
 
 from app.auth.schemas import UserLogin
 from app.auth.services import AuthService
-from app.config.db import get_db
+from app.config.db import db
 
 class AuthRouter:
     def __init__(self):
@@ -12,6 +12,6 @@ class AuthRouter:
 
     def _add_routes(self):
         @self.auth_router.post("/login")
-        def login_(payload: UserLogin = Body(), db: Session = Depends(get_db)):
+        def login_(payload: UserLogin = Body(), db_: Session = Depends(db.get_db)):
             print(f"PAYLOAD IN POST LOGIN ROUTE: \n {payload}")
-            return AuthService(db).login(payload)
+            return AuthService(db_).login(payload)
