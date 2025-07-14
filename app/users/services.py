@@ -9,7 +9,6 @@ from fastapi import HTTPException
 from app.audit_logs.models import AuditLog
 from app.categories.models import Category
 from app.config.config import Settings
-from app.config.db import get_db
 from app.transactions.models import Transaction
 from app.users.models import User
 from app.users.schemas import NewUserSchema, UpdateUser, UserSchemaWithTransactions

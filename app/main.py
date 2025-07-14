@@ -1,27 +1,34 @@
 import os
 from fastapi import FastAPI
-from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from sqlalchemy import inspect
-from sqlmodel import Session
+from sqlmodel import SQLModel, Session
 
 from app.auth.routers import AuthRouter
 from app.core.exceptions import ExceptionsHandlers
 from app.users.routers import UserRouter 
-from app.users.models import User
 from app.categories.routers import CategoryRouter 
-from app.categories.models import Category
 from app.transactions.routers import TransactionRouter
-from app.transactions.models import Transaction
-from app.config.db import Base, engine
+from app.config.db import db
 from app.utils.populate_tables import PopulateTable
 
 load_dotenv()
 
-print(f"Connected to {engine.url} database")
+engine = db.create_db_connection()
 
-Base.metadata.create_all(bind=engine)
-print(Base.metadata.create_all(bind=engine))
+print(f"Connected to {db.engine.url} database")
+
+def init_models():
+    from app.users.models import User
+    from app.roles.models import Role
+    from app.categories.models import Category
+    from app.transactions.models import Transaction
+    from app.audit_logs.models import AuditLog
+    db.Base.metadata.create_all(bind=engine)
+    print(db.Base.metadata.create_all(bind=engine))
+
+init_models()
+
 inspector = inspect(engine)
 print(inspector.get_table_names())
 PopulateTable(engine).populate_categories()

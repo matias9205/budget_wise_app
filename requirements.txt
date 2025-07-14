@@ -12,3 +12,6 @@ pydantic[email]
 pydantic
 passlib[bcrypt]
 python-jose[cryptography]
+httpx
+pytest
+pytest-asyncio

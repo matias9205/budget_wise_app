@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.config.db import get_db
+from app.config.db import db
 
 from .models import Category 
 from .schemas import CategorySchema, NewCategorySchema
@@ -13,6 +13,6 @@ class CategoryRouter:
     
     def _add_routes(self):
         @self.category_router.get("/", response_model=list[CategorySchema])
-        def fetch_categories(db: Session = Depends(get_db)):
-            categories = db.query(Category).all()
+        def fetch_categories(db_: Session = Depends(db.get_db)):
+            categories = db_.query(Category).all()
             return categories
