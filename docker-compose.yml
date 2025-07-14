@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   mysql-db:
@@ -12,6 +12,29 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  fastapi-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: mysql+pymysql://root:root1234@mysql-db:3306/BudgetWiseAPI
+      SECRET_KEY: Paris1234
+      USE_ENV_FILE: false
+    volumes:
+      - ./app:/app/app
+      - ./requirements.txt:/requirements.txt
+      
 volumes:
   mysql_data:
